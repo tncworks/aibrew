@@ -55,15 +55,15 @@ description: "Task list for 生成AIニュースダイジェスト (07:00 JST版
 
 ### ユーザーストーリー1のテスト
 
-- [ ] T013 [P] [US1] `tests/contract/test_digest_listing.spec.ts` で `/v1/digests` 契約テストを追加（entries/readMore/status検証）  
-- [ ] T014 [P] [US1] `tests/integration/test_digest_generation.spec.ts` を作成し Firestoreエミュレータでfetch→summarize→publishパイプラインを検証  
-- [ ] T015 [P] [US1] `tests/e2e/test_digest_page.spec.ts` (Playwright) で1日10件＋関連ソース表示＋07:00 SLOバナーを検証
+- [X] T013 [P] [US1] `tests/contract/test_digest_listing.spec.ts` で `/v1/digests` 契約テストを追加（entries/readMore/status検証）  
+- [X] T014 [P] [US1] `tests/integration/test_digest_generation.spec.ts` を作成し Firestoreエミュレータでfetch→summarize→publishパイプラインを検証  
+- [X] T015 [P] [US1] `tests/e2e/test_digest_page.spec.ts` (Playwright) で1日10件＋07:00 SLOバナーを検証
 
 ### ユーザーストーリー1の実装
 
-- [ ] T016 [P] [US1] `src/models/source_feed.ts` `src/models/article_candidate.ts` にSourceFeed/ArticleCandidateスキーマとバリデーションを実装  
-- [ ] T017 [P] [US1] `src/models/digest_entry.ts` と `src/models/digest_run.ts` にDigestEntry/DigestRunモデル・インデックス定義を追加  
-- [ ] T018 [P] [US1] `src/services/digest_pipeline/aggregator.ts` を実装し重複排除・順位付け・read-more振り分けロジックを追加  
+- [X] T016 [P] [US1] `src/models/source_feed.ts` `src/models/article_candidate.ts` にSourceFeed/ArticleCandidateスキーマとバリデーションを実装  
+- [X] T017 [P] [US1] `src/models/digest_entry.ts` と `src/models/digest_run.ts` にDigestEntry/DigestRunモデル・インデックス定義を追加  
+- [X] T018 [P] [US1] `src/services/digest_pipeline/aggregator.ts` を実装し重複排除・順位付け・read-more振り分けロジックを追加  
 - [ ] T019 [US1] `src/cli/cron/jobs/fetch_sources.ts` にQiita/Zenn/IT系RSS取得＋SourceFeed更新＋ArticleCandidate作成を実装  
 - [ ] T020 [US1] `src/cli/cron/jobs/summarize_articles.ts` でVertex AIを呼び出し summary/tags/read_time/confidence を保存する処理を追加  
 - [ ] T021 [US1] `src/cli/cron/jobs/publish_digest.ts` でapproved候補をDigestEntryへ昇格し `DigestRun` を更新・フォールバック判定する処理を実装  
