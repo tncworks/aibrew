@@ -5,7 +5,6 @@ locals {
 resource "google_monitoring_alert_policy" "digest_slo" {
   display_name = "aibrew-${var.environment}-digest-slo"
   combiner     = "OR"
-  depends_on   = [google_project_service.required]
 
   conditions {
     display_name = "Digest pipeline success before 06:45"
@@ -33,7 +32,6 @@ resource "google_monitoring_alert_policy" "digest_slo" {
 resource "google_monitoring_alert_policy" "monthly_cost" {
   display_name = "aibrew-${var.environment}-cost-guardrail"
   combiner     = "OR"
-  depends_on   = [google_project_service.required]
 
   conditions {
     display_name = "Monthly cost exceeds ${var.monthly_cost_threshold} USD"
