@@ -1,0 +1,47 @@
+# Cloud Run Jobs Dockerfile
+FROM node:20-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Install pnpm
+RUN corepack enable pnpm
+
+# Copy package files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
+
+# Build the application
+FROM base AS builder
+WORKDIR /app
+RUN corepack enable pnpm
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Production image
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 jobuser
+
+# Copy necessary files
+COPY --from=builder --chown=jobuser:nodejs /app/package.json ./
+COPY --from=builder --chown=jobuser:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=jobuser:nodejs /app/src ./src
+COPY --from=builder --chown=jobuser:nodejs /app/config ./config
+COPY --from=builder --chown=jobuser:nodejs /app/tsconfig.json ./
+
+# Install tsx for TypeScript execution
+RUN corepack enable pnpm && pnpm add -g tsx
+
+USER jobuser
+
+# Entry point will be specified by Cloud Run Job configuration
+# CMD is overridden by the job's command
+CMD ["tsx", "src/cli/cron/digest_pipeline.ts"]
