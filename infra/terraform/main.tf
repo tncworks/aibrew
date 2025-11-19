@@ -30,22 +30,20 @@ locals {
 #   service = each.key
 # }
 
-resource "google_firestore_database" "default" {
-  name        = "(default)"
-  project     = var.project_id
-  location_id = var.region
-  type        = "FIRESTORE_NATIVE"
-  
-  # Database already exists, import it
-  lifecycle {
-    prevent_destroy = true
-  }
+# Firestore database already exists, reference it as data source
+data "google_firestore_database" "default" {
+  name     = "(default)"
+  project  = var.project_id
 }
 
 resource "google_secret_manager_secret" "slack_webhook" {
   secret_id = "digest-slack-webhook${local.env_suffix}"
   replication {
     auto {}
+  }
+  
+  lifecycle {
+    prevent_destroy = true
   }
 }
 
