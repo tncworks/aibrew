@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '../../../../../services/firestore/admin.js';
-import { loadConfig } from '../../../../../services/config/index.js';
-import { info } from '../../../../../services/observability/logging.js';
-import { writeMetric } from '../../../../../services/observability/metrics.js';
-import { buildDigestQuery } from '../../../../../services/digest_pipeline/filter_query.js';
+import { getDb } from '@/services/firestore/admin.js';
+import { loadConfig } from '@/services/config/index.js';
+import { info } from '@/services/observability/logging.js';
+import { writeMetric } from '@/services/observability/metrics.js';
+import { buildDigestQuery } from '@/services/digest_pipeline/filter_query.js';
 
 type DigestRunStatus = {
   latestSuccessSlot: string | null;

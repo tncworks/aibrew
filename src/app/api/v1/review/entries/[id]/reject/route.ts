@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rejectCandidate } from '../../../../../../services/review_queue.js';
-import { enqueueRetry } from '../../../../../../services/quality_gate/retry_queue.js';
+import { rejectCandidate } from '@/services/review_queue.js';
+import { enqueueRetry } from '@/services/quality_gate/retry_queue.js';
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   const body = await request.json();

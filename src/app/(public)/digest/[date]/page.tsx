@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TagFilterPanel } from "../../../../components/filters/TagFilterPanel";
+import { TagFilterPanel } from "@/components/filters/TagFilterPanel";
 
 type DigestEntry = {
   id: string;
