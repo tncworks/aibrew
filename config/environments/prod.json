@@ -1,0 +1,29 @@
+{
+  "name": "prod",
+  "firestoreProject": "aibrew-prod",
+  "vertex": {
+    "project": "aibrew-prod",
+    "location": "asia-northeast1",
+    "summaryModel": "text-bison@002",
+    "factCheckModel": "gemini-pro"
+  },
+  "cloudRun": {
+    "region": "asia-northeast1",
+    "services": {
+      "web": "digest-web"
+    },
+    "jobs": {
+      "crawler": "digest-crawler",
+      "summarize": "digest-summarize",
+      "publish": "digest-publish"
+    }
+  },
+  "scheduler": {
+    "slots": ["0530", "0600", "0630"],
+    "timezone": "Asia/Tokyo"
+  },
+  "observability": {
+    "logName": "projects/aibrew-prod/logs/digest",
+    "metricsPrefix": "custom.googleapis.com/aibrew/prod"
+  }
+}

@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "001-ai-news-digest"]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: make deps
+
+      - name: Check prerequisites
+        run: bash .specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
+
+      - name: Lint
+        run: make lint
+
+      - name: Unit/Integration/Contract/E2E tests
+        env:
+          FIRESTORE_EMULATOR_HOST: localhost:8080
+        run: make test

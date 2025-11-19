@@ -1,0 +1,323 @@
+openapi: 3.0.3
+info:
+  title: AI Brew Digest API
+  version: 0.1.0
+  description: >-
+    生成AIニュースダイジェスト閲覧および編集レビュー用API。
+servers:
+  - url: https://api.aibrew.dev
+paths:
+  /v1/digests:
+    get:
+      summary: 指定日のダイジェスト一覧取得
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          description: YYYY-MM-DD (JST)。未指定時は本日。
+        - in: query
+          name: tags
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+          description: タグフィルタ (model-update,new-tools,...)
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: タイトル/要約全文検索 (40文字以内)
+      responses:
+        '200':
+          description: ダイジェストを返却 (最大10件)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                  entries:
+                    type: array
+                    maxItems: 10
+                    items:
+                      $ref: '#/components/schemas/DigestEntry'
+                  readMore:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DigestEntry'
+                  status:
+                    $ref: '#/components/schemas/DigestRunStatus'
+        '400':
+          description: パラメータ不正
+        '503':
+          description: ソース取得中 (キャッシュ利用)
+  /v1/digest-runs:
+    get:
+      summary: ダイジェスト生成スロットの進捗取得
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          description: 対象日。未指定時は今日。
+      responses:
+        '200':
+          description: DigestRun ステータス一覧
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DigestRun'
+        '404':
+          description: データなし (過去未生成)
+  /v1/digests/{date}/entries/{entryId}:
+    get:
+      summary: 単一エントリ詳細
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: entryId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: エントリ詳細
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DigestEntry'
+        '404':
+          description: 該当エントリなし
+  /v1/review/queue:
+    get:
+      summary: レビュー待ちキュー
+      security:
+        - firebaseAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+          description: 既定は pending
+      responses:
+        '200':
+          description: レビュー対象一覧
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ArticleCandidate'
+        '401':
+          description: 認証失敗
+  /v1/review/entries/{candidateId}/approve:
+    post:
+      summary: 要約承認
+      security:
+        - firebaseAuth: []
+      parameters:
+        - in: path
+          name: candidateId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes:
+                  type: string
+                  maxLength: 500
+                digestDate:
+                  type: string
+                  format: date
+                order:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+      responses:
+        '200':
+          description: 承認成功しDigestEntry作成
+        '409':
+          description: 既に別エントリで同枠が使用中
+  /v1/review/entries/{candidateId}/reject:
+    post:
+      summary: 要約差戻し
+      security:
+        - firebaseAuth: []
+      parameters:
+        - in: path
+          name: candidateId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                  maxLength: 500
+      responses:
+        '200':
+          description: 差戻し完了
+        '404':
+          description: 該当候補なし
+components:
+  securitySchemes:
+    firebaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    DigestEntry:
+      type: object
+      required: [id, title, summary, tags, primarySource, relatedSources, readTimeMinutes, publishedAt, updatedAt, visibility]
+      properties:
+        id:
+          type: string
+        digestDate:
+          type: string
+          format: date
+        order:
+          type: integer
+          minimum: 1
+          maximum: 10
+        title:
+          type: string
+        summary:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        primarySource:
+          $ref: '#/components/schemas/SourceLite'
+        relatedSources:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceLite'
+          maxItems: 3
+        readTimeMinutes:
+          type: number
+        publishedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        visibility:
+          type: string
+          enum: [featured, read-more, hidden]
+        targetReadyBy:
+          type: string
+          format: date-time
+          description: 07:00 JST リリース目標 (実際の公開待ちバナー表示制御)
+    SourceLite:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
+        logoUrl:
+          type: string
+          format: uri
+    ArticleCandidate:
+      type: object
+      required: [id, title, originalUrl, sourceId, summaryDraft, tags, confidence, status]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        originalUrl:
+          type: string
+          format: uri
+        sourceId:
+          type: string
+        fetchedAt:
+          type: string
+          format: date-time
+        publishedAt:
+          type: string
+          format: date-time
+        summaryDraft:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        reviewerNotes:
+          type: string
+    DigestRun:
+      type: object
+      required: [digestDate, slot, status, startedAt]
+      properties:
+        digestDate:
+          type: string
+          format: date
+        slot:
+          type: string
+          enum: ['0530', '0600', '0630']
+        status:
+          type: string
+          enum: [success, failed, fallback]
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        errorCode:
+          type: string
+          nullable: true
+        fallbackUsed:
+          type: boolean
+    DigestRunStatus:
+      type: object
+      properties:
+        latestSuccessSlot:
+          type: string
+          enum: ['0530', '0600', '0630']
+          nullable: true
+        fallbackActive:
+          type: boolean
+        bannerMessage:
+          type: string

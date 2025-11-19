@@ -1,0 +1,49 @@
+# Node / Next.js
+node_modules/
+.pnpm-store/
+dist/
+build/
+.next/
+out/
+pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+*.tsbuildinfo
+
+# Environment / secrets
+.env
+.env.*
+.envrc
+
+# Logs / coverage / test artifacts
+logs/
+*.log
+coverage/
+playwright-report/
+test-results/
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Terraform / IaC
+.terraform/
+terraform.tfstate
+terraform.tfstate.*
+*.tfvars
+.terraform.lock.hcl
+
+# Docker / Cloud Run artifacts
+.docker/
+docker-compose.override.yml
+
+# Misc build outputs
+.cache/
+.vercel/
+
+# Codex / AI tools
+.codex/

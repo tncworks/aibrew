@@ -1,0 +1,29 @@
+{
+  "name": "stg",
+  "firestoreProject": "aibrew-stg",
+  "vertex": {
+    "project": "aibrew-stg",
+    "location": "asia-northeast1",
+    "summaryModel": "text-bison@002",
+    "factCheckModel": "gemini-pro"
+  },
+  "cloudRun": {
+    "region": "asia-northeast1",
+    "services": {
+      "web": "digest-web-stg"
+    },
+    "jobs": {
+      "crawler": "digest-crawler-stg",
+      "summarize": "digest-summarize-stg",
+      "publish": "digest-publish-stg"
+    }
+  },
+  "scheduler": {
+    "slots": ["0530", "0600", "0630"],
+    "timezone": "Asia/Tokyo"
+  },
+  "observability": {
+    "logName": "projects/aibrew-stg/logs/digest",
+    "metricsPrefix": "custom.googleapis.com/aibrew/stg"
+  }
+}
