@@ -1,7 +1,7 @@
 project_id             = "aibrew-dev"
 region                 = "asia-northeast1"
 environment            = "dev"
-web_image              = "gcr.io/aibrew-dev/digest-web:latest"
-job_image              = "gcr.io/aibrew-dev/digest-jobs:latest"
+web_image              = "asia-northeast1-docker.pkg.dev/aibrew-dev/aibrew/digest-web:latest"
+job_image              = "asia-northeast1-docker.pkg.dev/aibrew-dev/aibrew/digest-jobs:latest"
 scheduler_timezone     = "Asia/Tokyo"
 monthly_cost_threshold = 40

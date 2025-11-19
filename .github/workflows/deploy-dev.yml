@@ -49,27 +49,27 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Configure Docker for GCR
-        run: gcloud auth configure-docker
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev
 
       - name: Build Web Image
         run: |
-          docker build -t gcr.io/$PROJECT_ID/digest-web:$GITHUB_SHA \
-                       -t gcr.io/$PROJECT_ID/digest-web:latest \
+          docker build -t asia-northeast1-docker.pkg.dev/$PROJECT_ID/aibrew/digest-web:$GITHUB_SHA \
+                       -t asia-northeast1-docker.pkg.dev/$PROJECT_ID/aibrew/digest-web:latest \
                        -f Dockerfile.web .
 
       - name: Build Jobs Image
         run: |
-          docker build -t gcr.io/$PROJECT_ID/digest-jobs:$GITHUB_SHA \
-                       -t gcr.io/$PROJECT_ID/digest-jobs:latest \
+          docker build -t asia-northeast1-docker.pkg.dev/$PROJECT_ID/aibrew/digest-jobs:$GITHUB_SHA \
+                       -t asia-northeast1-docker.pkg.dev/$PROJECT_ID/aibrew/digest-jobs:latest \
                        -f Dockerfile.jobs .
 
-      - name: Push Images to GCR
+      - name: Push Images to Artifact Registry
         run: |
-          docker push gcr.io/$PROJECT_ID/digest-web:$GITHUB_SHA
-          docker push gcr.io/$PROJECT_ID/digest-web:latest
-          docker push gcr.io/$PROJECT_ID/digest-jobs:$GITHUB_SHA
-          docker push gcr.io/$PROJECT_ID/digest-jobs:latest
+          docker push asia-northeast1-docker.pkg.dev/$PROJECT_ID/aibrew/digest-web:$GITHUB_SHA
+          docker push asia-northeast1-docker.pkg.dev/$PROJECT_ID/aibrew/digest-web:latest
+          docker push asia-northeast1-docker.pkg.dev/$PROJECT_ID/aibrew/digest-jobs:$GITHUB_SHA
+          docker push asia-northeast1-docker.pkg.dev/$PROJECT_ID/aibrew/digest-jobs:latest
 
       - name: Setup OpenTofu
         uses: opentofu/setup-opentofu@v1
