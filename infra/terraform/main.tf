@@ -17,25 +17,29 @@ locals {
   env_suffix = "-${var.environment}"
 }
 
-resource "google_project_service" "required" {
-  for_each = toset([
-    "run.googleapis.com",
-    "cloudfunctions.googleapis.com",
-    "cloudscheduler.googleapis.com",
-    "secretmanager.googleapis.com",
-    "firestore.googleapis.com",
-    "logging.googleapis.com",
-    "monitoring.googleapis.com",
-  ])
-  service = each.key
-}
+# APIs are already enabled, skip this resource
+# resource "google_project_service" "required" {
+#   for_each = toset([
+#     "run.googleapis.com",
+#     "cloudscheduler.googleapis.com",
+#     "secretmanager.googleapis.com",
+#     "firestore.googleapis.com",
+#     "logging.googleapis.com",
+#     "monitoring.googleapis.com",
+#   ])
+#   service = each.key
+# }
 
 resource "google_firestore_database" "default" {
   name        = "(default)"
   project     = var.project_id
   location_id = var.region
   type        = "FIRESTORE_NATIVE"
-  depends_on  = [google_project_service.required]
+  
+  # Database already exists, import it
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "google_secret_manager_secret" "slack_webhook" {
@@ -54,7 +58,7 @@ resource "google_cloud_run_v2_service" "digest_web" {
       image = var.web_image
       resources {
         limits = {
-          cpu    = "0.25"
+          cpu    = "1"
           memory = "512Mi"
         }
       }
@@ -94,7 +98,7 @@ resource "google_cloud_run_v2_job" "digest_jobs" {
           value = each.key
         }
       }
-      service_account = "projects/${var.project_id}/serviceAccounts/cloud-run-invoker@${var.project_id}.iam.gserviceaccount.com"
+      service_account = "cloud-run-invoker@${var.project_id}.iam.gserviceaccount.com"
     }
   }
 }
@@ -115,7 +119,7 @@ resource "google_cloud_scheduler_job" "digest_slots" {
     uri = "https://cloudrun.googleapis.com/apis/run.googleapis.com/v1/namespaces/${var.project_id}/jobs/${google_cloud_run_v2_job.digest_jobs["crawler"].name}:run"
     http_method = "POST"
     oidc_token {
-      service_account_email = "projects/${var.project_id}/serviceAccounts/cloud-run-invoker@${var.project_id}.iam.gserviceaccount.com"
+      service_account_email = "cloud-run-invoker@${var.project_id}.iam.gserviceaccount.com"
     }
   }
 }
