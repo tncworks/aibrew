@@ -22,6 +22,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          clean: true
+
+      - name: Verify monitoring.tf
+        run: |
+          echo "=== Checking monitoring.tf for depends_on ==="
+          if grep -n "depends_on" infra/terraform/monitoring.tf; then
+            echo "ERROR: depends_on found in monitoring.tf"
+            exit 1
+          else
+            echo "OK: No depends_on in monitoring.tf"
+          fi
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
