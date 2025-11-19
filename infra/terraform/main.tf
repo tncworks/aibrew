@@ -17,33 +17,13 @@ locals {
   env_suffix = "-${var.environment}"
 }
 
-# APIs are already enabled, skip this resource
-# resource "google_project_service" "required" {
-#   for_each = toset([
-#     "run.googleapis.com",
-#     "cloudscheduler.googleapis.com",
-#     "secretmanager.googleapis.com",
-#     "firestore.googleapis.com",
-#     "logging.googleapis.com",
-#     "monitoring.googleapis.com",
-#   ])
-#   service = each.key
-# }
-
-# Firestore database already exists, reference it as data source
-data "google_firestore_database" "default" {
-  name     = "(default)"
-  project  = var.project_id
-}
+# APIs are already enabled manually, skip this resource
+# Firestore database also already exists manually, not managed by Terraform
 
 resource "google_secret_manager_secret" "slack_webhook" {
   secret_id = "digest-slack-webhook${local.env_suffix}"
   replication {
     auto {}
-  }
-  
-  lifecycle {
-    prevent_destroy = true
   }
 }
 

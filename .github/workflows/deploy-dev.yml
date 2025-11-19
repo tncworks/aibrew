@@ -95,27 +95,5 @@ jobs:
         run: |
           rm -rf .terraform .terraform.lock.hcl
           tofu init
-          
-          # Import existing resources into Terraform state
-          tofu import -var-file=terraform.tfvars.dev \
-            'google_secret_manager_secret.slack_webhook' \
-            'projects/aibrew-dev/secrets/digest-slack-webhook-dev' || true
-          
-          tofu import -var-file=terraform.tfvars.dev \
-            'google_cloud_run_v2_service.digest_web' \
-            'projects/aibrew-dev/locations/asia-northeast1/services/digest-web-dev' || true
-          
-          tofu import -var-file=terraform.tfvars.dev \
-            'google_cloud_run_v2_job.digest_jobs["crawler"]' \
-            'projects/aibrew-dev/locations/asia-northeast1/jobs/digest-crawler-dev' || true
-          
-          tofu import -var-file=terraform.tfvars.dev \
-            'google_cloud_run_v2_job.digest_jobs["summarize"]' \
-            'projects/aibrew-dev/locations/asia-northeast1/jobs/digest-summarize-dev' || true
-          
-          tofu import -var-file=terraform.tfvars.dev \
-            'google_cloud_run_v2_job.digest_jobs["publish"]' \
-            'projects/aibrew-dev/locations/asia-northeast1/jobs/digest-publish-dev' || true
-          
           tofu plan -var-file=terraform.tfvars.dev -out=tfplan
           tofu apply -auto-approve tfplan
