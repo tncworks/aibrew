@@ -37,11 +37,8 @@ COPY --from=builder --chown=jobuser:nodejs /app/src ./src
 COPY --from=builder --chown=jobuser:nodejs /app/config ./config
 COPY --from=builder --chown=jobuser:nodejs /app/tsconfig.json ./
 
-# Install tsx for TypeScript execution
-RUN corepack enable pnpm && pnpm add -g tsx
-
 USER jobuser
 
 # Entry point will be specified by Cloud Run Job configuration
-# CMD is overridden by the job's command
-CMD ["tsx", "src/cli/cron/digest_pipeline.ts"]
+# Use npx to run tsx without global install
+CMD ["npx", "tsx", "src/cli/cron/digest_pipeline.ts"]
