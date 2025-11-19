@@ -7,7 +7,10 @@ describe('品質ゲート契約', () => {
       source_id: 'qiita',
       original_url: 'https://example.com',
       title: 'LLMの数値は3つ向上',
-      summary_draft: 'LLMの数値が3つ向上し読了時間が改善しました。'.repeat(3).slice(0, 120),
+      summary_draft:
+        'LLMが3つの改善を達成し応答速度が20%向上し読了時間が5分以内になりました。'.repeat(
+          4,
+        ).slice(0, 140),
       tags: ['model-update'],
       duplicate_group_id: 'group-1',
       confidence: 0.92,
