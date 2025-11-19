@@ -41,7 +41,7 @@ resource "google_firestore_database" "default" {
 resource "google_secret_manager_secret" "slack_webhook" {
   secret_id = "digest-slack-webhook${local.env_suffix}"
   replication {
-    automatic = true
+    auto {}
   }
 }
 
