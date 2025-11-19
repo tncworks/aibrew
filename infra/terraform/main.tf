@@ -6,6 +6,11 @@ terraform {
       version = "~> 5.20"
     }
   }
+  
+  backend "gcs" {
+    bucket = "aibrew-dev-terraform-state"
+    prefix = "terraform/state"
+  }
 }
 
 provider "google" {

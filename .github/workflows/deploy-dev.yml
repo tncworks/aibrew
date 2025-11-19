@@ -93,7 +93,6 @@ jobs:
       - name: Deploy with Terraform
         working-directory: ./infra/terraform
         run: |
-          rm -rf .terraform .terraform.lock.hcl
-          tofu init
+          tofu init -reconfigure
           tofu plan -var-file=terraform.tfvars.dev -out=tfplan
           tofu apply -auto-approve tfplan
