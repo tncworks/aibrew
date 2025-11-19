@@ -49,16 +49,48 @@ make format   # 自動整形
 ```
 
 ## 7. デプロイ
-1. `make build` でNext.js静的出力とCloud Run OCIイメージを作成。  
-2. `make deploy` が以下を自動化:  
-   - `gcloud run deploy digest-web --min-instances=0 --cpu=0.25 --memory=512Mi`
-   - `gcloud run jobs deploy digest-crawler`
-   - `gcloud run jobs deploy digest-summarize`
-   - `gcloud run jobs deploy digest-publish`
-   - `gcloud scheduler jobs update http digest-crawler-0530 --schedule="30 5 * * *"`
-   - `gcloud scheduler jobs update http digest-crawler-0600 --schedule="0 6 * * *"`
-   - `gcloud scheduler jobs update http digest-crawler-0630 --schedule="30 6 * * *"`
-3. Firestoreインデックスを `firebase firestore:indexes` で同期。
+
+### CI/CD自動デプロイ（推奨）
+
+`001-ai-news-digest`ブランチへのpushで自動的にGitHub Actionsが実行されます：
+
+```bash
+git add .
+git commit -m "feat: 新機能追加"
+git push origin 001-ai-news-digest
+```
+
+デプロイプロセス:
+
+1. Docker Imageビルド（Web: Next.js, Jobs: TypeScript）
+2. Artifact Registry (`asia-northeast1-docker.pkg.dev/aibrew-dev/aibrew`) へpush
+3. OpenTofu (Terraform互換) でインフラデプロイ
+   - Cloud Run Service: `digest-web-dev`
+   - Cloud Run Jobs: `digest-crawler-dev`, `digest-summarize-dev`, `digest-publish-dev`
+   - Cloud Scheduler: 3スロット (05:30, 06:00, 06:30 JST)
+   - Secret Manager: `digest-slack-webhook-dev`
+4. Terraform StateはGCS (`aibrew-dev-terraform-state`) で永続化
+
+デプロイ済みURL: <https://digest-web-dev-5ekn6nnj7q-an.a.run.app>
+
+### 手動デプロイ
+
+```bash
+# Dockerイメージのビルド
+docker build -t asia-northeast1-docker.pkg.dev/aibrew-dev/aibrew/digest-web:latest -f Dockerfile.web .
+docker build -t asia-northeast1-docker.pkg.dev/aibrew-dev/aibrew/digest-jobs:latest -f Dockerfile.jobs .
+
+# Artifact Registryへpush
+docker push asia-northeast1-docker.pkg.dev/aibrew-dev/aibrew/digest-web:latest
+docker push asia-northeast1-docker.pkg.dev/aibrew-dev/aibrew/digest-jobs:latest
+
+# Terraformでインフラ更新
+cd infra/terraform
+tofu init -reconfigure
+tofu plan -var-file=terraform.tfvars.dev
+tofu apply -var-file=terraform.tfvars.dev
+```
+
 
 ## 8. コストガードレール
 - Cloud Run: 最大インスタンス10、リクエストタイムアウト300s。  
