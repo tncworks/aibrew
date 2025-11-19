@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { approveCandidate } from '@/services/review_queue.js';
+import { approveCandidate } from '@/services/review_queue';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   const body = await request.json();

@@ -1,6 +1,6 @@
 import { getApps, initializeApp, AppOptions } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
-import { loadConfig } from '../config/index.js';
+import { loadConfig } from '../config/index';
 
 let firestoreInstance: Firestore | null = null;
 

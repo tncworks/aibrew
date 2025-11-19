@@ -1,4 +1,4 @@
-import { ArticleCandidate } from '../../models/article_candidate.js';
+import { ArticleCandidate } from '../../models/article_candidate';
 
 export type QualityGateResult = {
   passed: boolean;
@@ -22,8 +22,9 @@ export function evaluateCandidate(candidate: ArticleCandidate): QualityGateResul
   }
 
   // 数字の整合性 (タイトル内の数値と要約内の数値が一致しているかざっくり比較)
-  const titleNumbers = candidate.title.match(numericPattern) ?? [];
-  const summaryNumbers = candidate.summary_draft.match(numericPattern) ?? [];
+  const titleNumbers: string[] = candidate.title.match(numericPattern) ?? [];
+  const summaryNumbers: string[] =
+    candidate.summary_draft.match(numericPattern) ?? [];
   const numberMismatch = titleNumbers.some((num) => !summaryNumbers.includes(num));
   if (numberMismatch) {
     issues.push('タイトルと要約の数値が一致しません');

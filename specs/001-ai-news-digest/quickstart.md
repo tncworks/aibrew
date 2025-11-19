@@ -8,8 +8,11 @@
 
 ## 2. 初期セットアップ
 ```bash
+corepack enable pnpm
+pnpm install --no-frozen-lockfile  # CIと同じロックファイルを生成
 make deps            # pnpm install + gcloud components update
 cp .env.example .env # Vertex AI API key / Firestoreエミュレータ設定を記入
+pnpm tsx src/scripts/seed_tag_facets.ts # タグ初期データ投入 (初回のみ)
 ```
 
 `.env` 主要変数:
@@ -67,7 +70,7 @@ make format   # 自動整形
 - Cloud Loggingで`resource.type=cloud_run_revision`をモニタし、`severity>=ERROR`をError Reportingへ集約。  
 - カスタムメトリクス: ジョブの収集件数、要約成功率、レビュー待ち件数を `gcloud metrics` で送信し、SLOダッシュボードをMonitorsで可視化。  
 - 週次でBigQueryエクスポートを実行し、人気タグや読了率を確認。
-- 07:00 JST公開SLO: `DigestRun` ドキュメントをCloud Monitoringにエクスポートし、06:45時点で成功スロットが無い場合Slackへ `#alerts` 通知、Fallback UI (前日ダイジェスト＋バナー) を自動適用。
+- 07:00 JST公開SLO: `DigestRun` ドキュメントをCloud Monitoringにエクスポートし、06:45時点で成功スロットが無い場合Slackへ `#alerts` 通知、Fallback UI (前日ダイジェスト＋バナー) を自動適用。Terraformの `monitoring.tf` でSLO/コストアラートも管理する。
 
 ## 10. 環境構築 (dev/stg/prod)
 1. **プロジェクト作成**  
@@ -102,3 +105,8 @@ make format   # 自動整形
 5. **データ分離**  
    - Firestoreインデックスとセキュリティルールを `firebase deploy --only firestore:indexes,firestore:rules --project $PROJECT` で各環境に同期。  
    - Vertex AI endpoint は `aibrew-{env}` 名称で作成し、要約ジョブは環境別サービスアカウントを使用。
+
+## 11. CIチェックリスト
+- `make lint` (Next.js ESLint + Prettier + MarkdownLint)  
+- `make test` (Jest + Playwright。RED→GREENの結果をPRへ記録)  
+- `make build` (Next.js App Router `src/app` 配下のコードをビルドし Cloud Run イメージへ組み込み)

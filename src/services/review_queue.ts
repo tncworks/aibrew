@@ -1,5 +1,5 @@
-import { getDb } from './firestore/admin.js';
-import { ArticleCandidateSchema } from '../models/article_candidate.js';
+import { getDb } from './firestore/admin';
+import { ArticleCandidateSchema } from '../models/article_candidate';
 
 const REVIEW_COLLECTION = 'editorial_reviews';
 

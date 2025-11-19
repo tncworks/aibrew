@@ -1,5 +1,5 @@
-import { ArticleCandidate } from '../../models/article_candidate.js';
-import { DigestEntry } from '../../models/digest_entry.js';
+import { ArticleCandidate } from '../../models/article_candidate';
+import { DigestEntry } from '../../models/digest_entry';
 
 export interface AggregatorOptions {
   maxFeatured?: number;

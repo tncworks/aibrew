@@ -1,5 +1,5 @@
 import { MetricServiceClient } from '@google-cloud/monitoring';
-import { loadConfig } from '../config/index.js';
+import { loadConfig } from '../config/index';
 
 const cfg = loadConfig();
 const monitoringClient = new MetricServiceClient();

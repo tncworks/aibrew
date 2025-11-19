@@ -82,3 +82,9 @@ infra/
 | 違反内容 | 必要理由 | 却下した単純案 |
 |----------|----------|----------------|
 | なし | - | - |
+
+## 検証ログ (2025-11-19)
+- `make lint` … `next lint` (core-web-vitals) がPASS  
+- `make test` … Jest (unit/integration/contract/perf) + Playwright E2E がすべてPASS  
+- `make build` … Next.js App Routerを本番ビルドし、`src/app` 配下のAPI/ページが正常に最適化  
+- 未解決事項: なし（`NEEDS CLARIFICATION`に該当する項目は現在ありません）

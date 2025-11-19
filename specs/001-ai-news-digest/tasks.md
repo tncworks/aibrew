@@ -127,12 +127,12 @@ description: "Task list for 生成AIニュースダイジェスト (07:00 JST版
 
 **目的**: ドキュメント整備、監視、コスト/SLO可視化など複数ストーリーで共有する作業。
 
-- [ ] T043 `specs/001-ai-news-digest/quickstart.md` と `README.md` に07:00 SLO/Cloud Schedulerスロット/新APIのランブックを追記  
-- [ ] T044 `specs/001-ai-news-digest/contracts/digest-api.yaml` を最終実装と照合しスキーマ差分を更新  
-- [ ] T045 `infra/terraform/monitoring.tf` を追加し Cloud Monitoring アラート（06:45 SLO/コスト$40/月）を構築  
-- [ ] T046 [P] `tests/performance/test_digest_performance.spec.ts` を追加し `/v1/digests` p95 < 800ms (50並列) を計測  
-- [ ] T047 `AGENTS.md` と `.specify/scripts/bash/update-agent-context.sh` 実行結果をコミットし、エージェントガイドを最新化  
-- [ ] T048 `make test`/`make lint`/`make build` 結果を記録し、未解決事項を `NEEDS CLARIFICATION` ラベル付きでplan.mdに追記
+- [X] T043 `specs/001-ai-news-digest/quickstart.md` と `README.md` に07:00 SLO/Cloud Schedulerスロット/新APIのランブックを追記  
+- [X] T044 `specs/001-ai-news-digest/contracts/digest-api.yaml` を最終実装と照合しスキーマ差分を更新  
+- [X] T045 `infra/terraform/monitoring.tf` を追加し Cloud Monitoring アラート（06:45 SLO/コスト$40/月）を構築  
+- [X] T046 [P] `tests/performance/test_digest_performance.spec.ts` を追加し `/v1/digests` p95 < 800ms (50並列) を計測  
+- [X] T047 `AGENTS.md` と `.specify/scripts/bash/update-agent-context.sh` 実行結果をコミットし、エージェントガイドを最新化  
+- [X] T048 `make test`/`make lint`/`make build` 結果を記録し、未解決事項を `NEEDS CLARIFICATION` ラベル付きでplan.mdに追記
 
 ---
 

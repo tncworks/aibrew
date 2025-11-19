@@ -1,4 +1,4 @@
-import { getDb } from '../../services/firestore/admin.js';
+import { getDb } from '../firestore/admin';
 
 const MAX_ATTEMPTS = 3;
 

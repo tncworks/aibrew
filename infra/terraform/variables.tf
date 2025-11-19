@@ -29,3 +29,15 @@ variable "scheduler_timezone" {
   type        = string
   default     = "Asia/Tokyo"
 }
+
+variable "notification_channels" {
+  description = "Cloud Monitoring Alert Policyの通知チャンネル (オプション)"
+  type        = list(string)
+  default     = []
+}
+
+variable "monthly_cost_threshold" {
+  description = "月次コスト警戒ライン (USD)"
+  type        = number
+  default     = 40
+}

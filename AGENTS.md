@@ -1,13 +1,14 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-`.specify/` hosts the constitution, templates, and Bash helpers. Every feature branch must generate `specs/###-short-name/` with `spec.md`, `plan.md`, `tasks.md`, and supporting docs (`research.md`, `data-model.md`, `quickstart.md`, `contracts/`). Runtime code lives in `src/` (add `models/`, `services/`, `cli/` folders as needed), while checks sit in `tests/{unit,integration,contract}`. Store payloads, diagrams, and screenshots inside `specs/.../contracts/` (or an `assets/` child) to keep documentation and artefacts alongside the story.
+`.specify/` hosts the constitution, templates, and Bash helpers. Every feature branch must generate `specs/###-short-name/` with `spec.md`, `plan.md`, `tasks.md`, and supporting docs (`research.md`, `data-model.md`, `quickstart.md`, `contracts/`). Runtimeコードは `src/` 配下に集約し、Next.js App Router は `src/app/`、共有UIは `src/components/`、バッチや品質ゲートは `src/cli/` と `src/services/` に置く。テストは `tests/{unit,integration,contract,performance,e2e}` へ分類し、成果物やスクリーンショットは `specs/.../contracts/` (or `assets/`) に保管する。
 
 ## Build, Test, and Development Commands
 - `bash .specify/scripts/bash/create-new-feature.sh "Add telemetry ingest" --short-name telemetry` scaffolds the numbered spec directory.
 - `bash .specify/scripts/bash/setup-plan.sh` copies the latest plan template into `specs/<id>/plan.md`.
 - `bash .specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks` blocks coding until spec/plan/tasks exist; add it to CI jobs.
-- Maintain a thin `Makefile` (or similar) exposing `make deps`, `make build`, and `make test`, each wrapping the real toolchain (`pip`, `npm`, `cargo`, etc.) so contributors run identical commands locally and in CI.
+- Maintain a thin `Makefile` exposing `make deps`, `make lint`, `make test`, and `make build` so contributors run identical commands locally/CI. Next.js Lintは `next lint`、テストは `pnpm run test` (Jest + Playwright)、ビルドは `next build` をラップしている。
+- Node.js環境では `corepack enable pnpm` → `pnpm install --no-frozen-lockfile` を実行してロックファイルと依存関係を同期する。タグ初期データは `pnpm tsx src/scripts/seed_tag_facets.ts` で投入できる。
 
 ## Coding Style & Naming Conventions
 All narrative content—specs, plans, comments, commit messages—must be Japanese. Branches follow `###-short-name` (e.g., `004-observability`); `specs/` directories stay lowercase kebab-case. Code modules use the native language style (`snake_case.py`, `PascalCase.swift`, etc.), while Bash utilities copy `.specify/scripts/bash` (`#!/usr/bin/env bash`, `set -euo pipefail`, four-space indents). Document formatter/linter choices in each plan and surface them through `make lint`.

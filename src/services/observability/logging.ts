@@ -1,5 +1,5 @@
 import { Logging } from '@google-cloud/logging';
-import { loadConfig } from '../config/index.js';
+import { loadConfig } from '../config/index';
 
 type LogSeverity =
   | 'DEFAULT'

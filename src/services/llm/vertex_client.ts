@@ -3,7 +3,7 @@ import {
   HarmBlockThreshold,
   HarmCategory,
 } from '@google-cloud/vertexai';
-import { loadConfig } from '../config/index.js';
+import { loadConfig } from '../config/index';
 
 const cfg = loadConfig();
 

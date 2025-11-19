@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/services/firestore/admin.js';
-import { loadConfig } from '@/services/config/index.js';
-import { info } from '@/services/observability/logging.js';
-import { writeMetric } from '@/services/observability/metrics.js';
-import { buildDigestQuery } from '@/services/digest_pipeline/filter_query.js';
+import { getDb } from '@/services/firestore/admin';
+import { info } from '@/services/observability/logging';
+import { writeMetric } from '@/services/observability/metrics';
+import { buildDigestQuery } from '@/services/digest_pipeline/filter_query';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 type DigestRunStatus = {
   latestSuccessSlot: string | null;
@@ -17,7 +19,6 @@ function today() {
 
 export async function GET(request: NextRequest) {
   const db = getDb();
-  const cfg = loadConfig();
   const url = new URL(request.url);
   const dateParam = url.searchParams.get('date') ?? today();
   const tagParam = url.searchParams.get('tags');
@@ -60,7 +61,6 @@ export async function GET(request: NextRequest) {
     entries: featured,
     readMore,
     status,
-    config: { region: cfg.cloudRun.region },
   });
 }
 

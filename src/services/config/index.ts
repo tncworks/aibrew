@@ -1,9 +1,28 @@
 import fs from 'fs';
 import path from 'path';
-import { config as loadDotenv } from 'dotenv';
 import { z } from 'zod';
 
-loadDotenv();
+let envLoaded = false;
+
+function loadLocalEnv() {
+  if (envLoaded) return;
+  const envPath = path.resolve(process.cwd(), '.env');
+  if (fs.existsSync(envPath)) {
+    const lines = fs.readFileSync(envPath, 'utf-8').split(/\r?\n/);
+    for (const line of lines) {
+      if (!line || line.trim().startsWith('#')) continue;
+      const [key, ...rest] = line.split('=');
+      if (!key || rest.length === 0) continue;
+      const value = rest.join('=').trim();
+      if (!process.env[key.trim()]) {
+        process.env[key.trim()] = value;
+      }
+    }
+  }
+  envLoaded = true;
+}
+
+loadLocalEnv();
 
 const schedulerSlotSchema = z.enum(['0530', '0600', '0630']).or(z.string());
 
@@ -76,6 +95,9 @@ export function loadConfig(envName: string = defaultEnvName): AppConfig {
 
   const filePath = resolveEnvPath(envName);
   if (!fs.existsSync(filePath)) {
+    if (envName !== 'dev') {
+      return loadConfig('dev');
+    }
     throw new Error(`環境ファイルが見つかりません: ${filePath}`);
   }
 
