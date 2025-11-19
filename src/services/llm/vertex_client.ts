@@ -1,23 +1,38 @@
-import { VertexAI, HarmBlockThreshold, HarmCategory } from '@google-cloud/vertexai';
+import {
+  VertexAI,
+  HarmBlockThreshold,
+  HarmCategory,
+} from '@google-cloud/vertexai';
 import { loadConfig } from '../config/index.js';
 
 const cfg = loadConfig();
 
-const vertex = new VertexAI({
-  project: cfg.vertex.project,
-  location: cfg.vertex.location,
-});
+const mockMode = process.env.AIBREW_MOCK_LLM === '1';
 
-const generativeModel = vertex.preview.getGenerativeModel({
-  model: cfg.vertex.summaryModel ?? cfg.vertex.summaryModel,
-  safetySettings: [
-    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-  ],
-});
+const vertex = mockMode
+  ? null
+  : new VertexAI({
+      project: cfg.vertex.project,
+      location: cfg.vertex.location,
+    });
 
-const factCheckModel = vertex.preview.getGenerativeModel({
-  model: cfg.vertex.factCheckModel ?? 'gemini-pro',
-});
+const generativeModel = vertex
+  ? vertex.preview.getGenerativeModel({
+      model: cfg.vertex.summaryModel ?? cfg.vertex.summaryModel,
+      safetySettings: [
+        {
+          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+          threshold: HarmBlockThreshold.BLOCK_NONE,
+        },
+      ],
+    })
+  : null;
+
+const factCheckModel = vertex
+  ? vertex.preview.getGenerativeModel({
+      model: cfg.vertex.factCheckModel ?? 'gemini-pro',
+    })
+  : null;
 
 const minIntervalMs = Math.ceil(
   (24 * 60 * 60 * 1000) / Math.max(cfg.vertexRuntime.maxSummariesPerDay, 1),
@@ -61,6 +76,9 @@ export async function generateSummary(
   prompt: string,
   options: SummarizeOptions = {},
 ) {
+  if (mockMode || !generativeModel) {
+    return `[MOCK SUMMARY] ${prompt.slice(0, 100)}`;
+  }
   await limiter.wait();
   const result = await runWithRetry(() =>
     generativeModel.generateContent({
@@ -78,6 +96,9 @@ export async function generateSummary(
 }
 
 export async function factCheckSummary(prompt: string) {
+  if (mockMode || !factCheckModel) {
+    return '[MOCK FACT CHECK]';
+  }
   await limiter.wait();
   const result = await runWithRetry(() =>
     factCheckModel.generateContent({

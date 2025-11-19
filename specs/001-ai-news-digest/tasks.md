@@ -64,13 +64,13 @@ description: "Task list for 生成AIニュースダイジェスト (07:00 JST版
 - [X] T016 [P] [US1] `src/models/source_feed.ts` `src/models/article_candidate.ts` にSourceFeed/ArticleCandidateスキーマとバリデーションを実装  
 - [X] T017 [P] [US1] `src/models/digest_entry.ts` と `src/models/digest_run.ts` にDigestEntry/DigestRunモデル・インデックス定義を追加  
 - [X] T018 [P] [US1] `src/services/digest_pipeline/aggregator.ts` を実装し重複排除・順位付け・read-more振り分けロジックを追加  
-- [ ] T019 [US1] `src/cli/cron/jobs/fetch_sources.ts` にQiita/Zenn/IT系RSS取得＋SourceFeed更新＋ArticleCandidate作成を実装  
-- [ ] T020 [US1] `src/cli/cron/jobs/summarize_articles.ts` でVertex AIを呼び出し summary/tags/read_time/confidence を保存する処理を追加  
-- [ ] T021 [US1] `src/cli/cron/jobs/publish_digest.ts` でapproved候補をDigestEntryへ昇格し `DigestRun` を更新・フォールバック判定する処理を実装  
-- [ ] T022 [US1] `src/cli/cron/digest_pipeline.ts` に05:30/06:00/06:30スロット実行と再試行、Slack通知トリガーを実装  
-- [ ] T023 [US1] `src/web/app/api/v1/digests/route.ts` でFirestoreからentries/readMore/statusを返却しキャッシュヘッダとSLOバナー判定を実装  
-- [ ] T024 [US1] `src/web/app/(public)/digest/[date]/page.tsx` を作成しSSRで10件以内のエントリ＋関連ソース折り畳み＋空デー時の導線を描画  
-- [ ] T025 [US1] `src/services/observability/logging.ts` と各ジョブ/APIに構造化ログ・Cloud Monitoringメトリクス送信を組み込み
+- [X] T019 [US1] `src/cli/cron/jobs/fetch_sources.ts` にQiita/Zenn/IT系RSS取得＋SourceFeed更新＋ArticleCandidate作成を実装  
+- [X] T020 [US1] `src/cli/cron/jobs/summarize_articles.ts` でVertex AIを呼び出し summary/tags/read_time/confidence を保存する処理を追加  
+- [X] T021 [US1] `src/cli/cron/jobs/publish_digest.ts` でapproved候補をDigestEntryへ昇格し `DigestRun` を更新・フォールバック判定する処理を実装  
+- [X] T022 [US1] `src/cli/cron/digest_pipeline.ts` に05:30/06:00/06:30スロット実行と再試行、Slack通知トリガーを実装  
+- [X] T023 [US1] `src/web/app/api/v1/digests/route.ts` でFirestoreからentries/readMore/statusを返却しキャッシュヘッダとSLOバナー判定を実装  
+- [X] T024 [US1] `src/web/app/(public)/digest/[date]/page.tsx` を作成しSSRで10件以内のエントリ＋関連ソース折り畳み＋空デー時の導線を描画  
+- [X] T025 [US1] `src/services/observability/logging.ts` と各ジョブ/APIに構造化ログ・Cloud Monitoringメトリクス送信を組み込み
 
 **チェックポイント**: US1の契約/統合/E2EテストがGREENで、07:00 JST公開SLOとフォールバック表示が実装されている。
 
@@ -83,17 +83,17 @@ description: "Task list for 生成AIニュースダイジェスト (07:00 JST版
 
 ### ユーザーストーリー2のテスト
 
-- [ ] T026 [P] [US2] `tests/contract/test_digest_filters.spec.ts` を追加し `/v1/digests?tags=&search=` の応答スキーマを検証  
-- [ ] T027 [P] [US2] `tests/e2e/test_tag_filtering.spec.ts` でタグ/検索UIの動的フィルタと件数を検証
+- [X] T026 [P] [US2] `tests/contract/test_digest_filters.spec.ts` を追加し `/v1/digests?tags=&search=` の応答スキーマを検証  
+- [X] T027 [P] [US2] `tests/e2e/test_tag_filtering.spec.ts` でタグ/検索UIの動的フィルタと件数を検証
 
 ### ユーザーストーリー2の実装
 
-- [ ] T028 [P] [US2] `src/models/tag_facet.ts` と `src/scripts/seed_tag_facets.ts` にTagFacet定義と初期データ投入スクリプトを実装  
-- [ ] T029 [P] [US2] `src/services/digest_pipeline/filter_query.ts` にタグ配列/全文検索を扱うFirestoreクエリヘルパーを実装  
-- [ ] T030 [US2] `src/web/app/api/v1/digests/route.ts` を拡張し `tags`/`search` クエリと `readMore` の分岐ロジックを追加  
-- [ ] T031 [US2] `src/web/components/filters/TagFilterPanel.tsx` にマルチセレクトUIとBadge表示、選択状態のURL同期を実装  
-- [ ] T032 [US2] `src/web/app/(public)/digest/[date]/page.tsx` にTagFilterPanelと検索ボックス、ローディング/Empty状態を統合  
-- [ ] T033 [US2] `src/services/observability/metrics.ts` にタグ利用メトリクス送信とCloud Monitoringダッシュボード連携を追加
+- [X] T028 [P] [US2] `src/models/tag_facet.ts` と `src/scripts/seed_tag_facets.ts` にTagFacet定義と初期データ投入スクリプトを実装  
+- [X] T029 [P] [US2] `src/services/digest_pipeline/filter_query.ts` にタグ配列/全文検索を扱うFirestoreクエリヘルパーを実装  
+- [X] T030 [US2] `src/web/app/api/v1/digests/route.ts` を拡張し `tags`/`search` クエリと `readMore` の分岐ロジックを追加  
+- [X] T031 [US2] `src/web/components/filters/TagFilterPanel.tsx` にマルチセレクトUIとBadge表示、選択状態のURL同期を実装  
+- [X] T032 [US2] `src/web/app/(public)/digest/[date]/page.tsx` にTagFilterPanelと検索ボックス、ローディング/Empty状態を統合  
+- [X] T033 [US2] `src/services/observability/metrics.ts` にタグ利用メトリクス送信とCloud Monitoringダッシュボード連携を追加
 
 **チェックポイント**: `/v1/digests` がタグ/検索に対応し、UIテストがGREENで5分読了体験を維持できる。
 
