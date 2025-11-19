@@ -8,11 +8,12 @@
     "build:web": "next build",
     "start:web": "next start",
     "lint": "next lint",
-    "test": "pnpm run test:unit && pnpm run test:integration && pnpm run test:contract && pnpm run test:e2e",
-    "test:unit": "jest --runInBand --config tests/jest.unit.config.cjs",
-    "test:integration": "jest --runInBand --config tests/jest.integration.config.cjs",
-    "test:contract": "jest --runInBand --config tests/jest.contract.config.cjs",
-    "test:e2e": "playwright test",
+    "test": "pnpm run test:jest && pnpm run test:e2e",
+    "test:jest": "jest --runInBand --config jest.config.cjs",
+    "test:unit": "pnpm run test:jest",
+    "test:integration": "pnpm run test:jest",
+    "test:contract": "pnpm run test:jest",
+    "test:e2e": "playwright test tests/e2e",
     "prepare": "husky install"
   },
   "dependencies": {
