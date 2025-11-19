@@ -7,11 +7,14 @@ const config = {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.ts'],
-  globals: {
-    'ts-jest': {
-      useESM: true,
-      tsconfig: './tsconfig.json',
-    },
+  transform: {
+    '^.+\\.(ts|tsx)$': [
+      'ts-jest',
+      {
+        useESM: true,
+        tsconfig: './tsconfig.json',
+      },
+    ],
   },
   testPathIgnorePatterns: ['/tests/e2e/'],
 };
