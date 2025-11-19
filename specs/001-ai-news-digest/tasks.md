@@ -106,18 +106,18 @@ description: "Task list for 生成AIニュースダイジェスト (07:00 JST版
 
 ### ユーザーストーリー3のテスト
 
-- [ ] T034 [P] [US3] `tests/contract/test_review_queue.spec.ts` を追加し `/v1/review/queue` および approve/reject エンドポイント契約を検証  
-- [ ] T035 [P] [US3] `tests/integration/test_quality_gate.spec.ts` で品質スコアしきい値・再要約キュー・監査ログを検証
+- [X] T034 [P] [US3] `tests/contract/test_review_queue.spec.ts` を追加し `/v1/review/queue` および approve/reject エンドポイント契約を検証  
+- [X] T035 [P] [US3] `tests/integration/test_quality_gate.spec.ts` で品質スコアしきい値・再要約キュー・監査ログを検証
 
 ### ユーザーストーリー3の実装
 
-- [ ] T036 [P] [US3] `src/services/quality_gate/rules.ts` に事実チェック/数値整合性/トーン検証ロジックを実装  
-- [ ] T037 [US3] `src/services/quality_gate/retry_queue.ts` で再要約キュー管理と最大3回までの再試行/バックオフを実装  
-- [ ] T038 [US3] `src/services/review_queue.ts` にEditorialReview/監査ログの読み書きと自動承認トリガーを実装  
-- [ ] T039 [US3] `src/web/app/api/v1/review/queue/route.ts` にレビュー待ちAPI (Firebase Auth JWT検証) を実装  
-- [ ] T040 [US3] `src/web/app/api/v1/review/entries/[id]/approve/route.ts` と `reject/route.ts` に自動承認/差戻しエンドポイントを実装  
-- [ ] T041 [US3] `src/cli/cron/jobs/summarize_articles.ts` を拡張し品質ゲートの結果で自動再要約・監査ログ更新を行う  
-- [ ] T042 [US3] `src/web/app/(admin)/review/page.tsx` にレビュー状況UIと自動承認ログビューアを実装
+- [X] T036 [P] [US3] `src/services/quality_gate/rules.ts` に事実チェック/数値整合性/トーン検証ロジックを実装  
+- [X] T037 [US3] `src/services/quality_gate/retry_queue.ts` で再要約キュー管理と最大3回までの再試行/バックオフを実装  
+- [X] T038 [US3] `src/services/review_queue.ts` にEditorialReview/監査ログの読み書きと自動承認トリガーを実装  
+- [X] T039 [US3] `src/web/app/api/v1/review/queue/route.ts` にレビュー待ちAPI (Firebase Auth JWT検証) を実装  
+- [X] T040 [US3] `src/web/app/api/v1/review/entries/[id]/approve/route.ts` と `reject/route.ts` に自動承認/差戻しエンドポイントを実装  
+- [X] T041 [US3] `src/cli/cron/jobs/summarize_articles.ts` を拡張し品質ゲートの結果で自動再要約・監査ログ更新を行う  
+- [X] T042 [US3] `src/web/app/(admin)/review/page.tsx` にレビュー状況UIと自動承認ログビューアを実装
 
 **チェックポイント**: 自動品質ゲートが再要約と公開判定を自律処理し、契約/統合テストがGREEN。
 
