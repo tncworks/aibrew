@@ -4,8 +4,8 @@
   "vertex": {
     "project": "aibrew-prod",
     "location": "asia-northeast1",
-    "summaryModel": "text-bison@002",
-    "factCheckModel": "gemini-pro"
+    "summaryModel": "gemini-1.5-flash",
+    "factCheckModel": "gemini-1.5-flash"
   },
   "cloudRun": {
     "region": "asia-northeast1",
