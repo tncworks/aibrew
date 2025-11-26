@@ -37,8 +37,7 @@ export async function runPublish(slot: string) {
   const snapshot = await db
     .collection('article_candidates')
     .where('status', '==', 'approved')
-    .orderBy('confidence', 'desc')
-    .limit(30)
+    .limit(100)
     .get();
 
   const candidates = snapshot.docs.map((doc) =>
@@ -46,7 +45,7 @@ export async function runPublish(slot: string) {
       id: doc.id,
       ...doc.data(),
     }),
-  );
+  ).sort((a, b) => b.confidence - a.confidence).slice(0, 30);
 
   const options: AggregatorOptions = { digestDate };
   const { featured, readMore } = aggregateCandidates(candidates, options);
