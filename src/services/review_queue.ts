@@ -1,7 +1,23 @@
 import { getDb } from './firestore/admin';
 import { ArticleCandidateSchema } from '../models/article_candidate';
+import { Timestamp } from 'firebase-admin/firestore';
 
 const REVIEW_COLLECTION = 'editorial_reviews';
+
+// Convert Firestore Timestamp to Date
+function toDate(value: unknown): Date | null {
+  if (value instanceof Timestamp) {
+    return value.toDate();
+  }
+  if (value instanceof Date) {
+    return value;
+  }
+  if (typeof value === 'string' || typeof value === 'number') {
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? null : date;
+  }
+  return null;
+}
 
 export async function listPendingCandidates(limit = 20) {
   const db = getDb();
@@ -10,7 +26,15 @@ export async function listPendingCandidates(limit = 20) {
     .where('status', 'in', ['pending', 'rejected'])
     .limit(limit)
     .get();
-  return snapshot.docs.map((doc) => ArticleCandidateSchema.parse({ id: doc.id, ...doc.data() }));
+  return snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return ArticleCandidateSchema.parse({
+      id: doc.id,
+      ...data,
+      fetched_at: toDate(data.fetched_at) ?? new Date(),
+      published_at: toDate(data.published_at) ?? new Date(),
+    });
+  });
 }
 
 export async function approveCandidate(candidateId: string, reviewerId: string, notes?: string) {

@@ -1,4 +1,5 @@
 import { getDb } from '../../../services/firestore/admin.js';
+import { toDateOrDefault } from '../../../services/firestore/timestamp_utils.js';
 import { generateSummary, factCheckSummary } from '../../../services/llm/vertex_client.js';
 import { info } from '../../../services/observability/logging.js';
 import { writeMetric } from '../../../services/observability/metrics.js';
@@ -31,9 +32,12 @@ export async function runSummarize(slot: string) {
     .get();
 
   for (const doc of snapshot.docs) {
+    const data = doc.data();
     const candidate = ArticleCandidateSchema.parse({
       id: doc.id,
-      ...doc.data(),
+      ...data,
+      fetched_at: toDateOrDefault(data.fetched_at),
+      published_at: toDateOrDefault(data.published_at),
     });
 
     const prompt = buildPrompt(candidate.title, candidate.original_url);

@@ -1,4 +1,5 @@
 import { getDb } from '../../../services/firestore/admin.js';
+import { toDateOrDefault } from '../../../services/firestore/timestamp_utils.js';
 import { info } from '../../../services/observability/logging.js';
 import { writeMetric } from '../../../services/observability/metrics.js';
 import { ArticleCandidateSchema } from '../../../models/article_candidate.js';
@@ -41,12 +42,15 @@ export async function runPublish(slot: string) {
     .limit(30)
     .get();
 
-  const candidates = snapshot.docs.map((doc) =>
-    ArticleCandidateSchema.parse({
+  const candidates = snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return ArticleCandidateSchema.parse({
       id: doc.id,
-      ...doc.data(),
-    }),
-  );
+      ...data,
+      fetched_at: toDateOrDefault(data.fetched_at),
+      published_at: toDateOrDefault(data.published_at),
+    });
+  });
 
   const options: AggregatorOptions = { digestDate };
   const { featured, readMore } = aggregateCandidates(candidates, options);
