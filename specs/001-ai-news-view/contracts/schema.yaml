@@ -1,0 +1,114 @@
+openapi: 3.0.0
+info:
+  title: AI News View API
+  version: 1.0.0
+paths:
+  /api/news/{id}:
+    get:
+      summary: Get news article by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Article ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsArticle'
+        '404':
+          description: Article not found
+components:
+  schemas:
+    NewsArticle:
+      type: object
+      required:
+        - id
+        - title
+        - publishDate
+        - author
+        - estimatedReadMinutes
+        - bodyBlocks
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        subtitle:
+          type: string
+        publishDate:
+          type: string
+          format: date-time
+        author:
+          $ref: '#/components/schemas/Author'
+        tags:
+          type: array
+          items:
+            type: string
+        heroImage:
+          $ref: '#/components/schemas/Image'
+        estimatedReadMinutes:
+          type: integer
+        bodyBlocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentBlock'
+        keyTakeaways:
+          type: array
+          items:
+            type: string
+        relatedLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedLink'
+    Author:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        avatarUrl:
+          type: string
+    Image:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+        alt:
+          type: string
+    ContentBlock:
+      type: object
+      required:
+        - type
+        - content
+      properties:
+        type:
+          type: string
+          enum: [paragraph, heading, quote, image, list]
+        content:
+          type: string
+        metadata:
+          type: object
+    RelatedLink:
+      type: object
+      required:
+        - title
+        - url
+        - sourceType
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        sourceType:
+          type: string
+          enum: [internal, external]
