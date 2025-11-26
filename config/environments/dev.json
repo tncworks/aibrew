@@ -3,7 +3,7 @@
   "firestoreProject": "aibrew-dev",
   "vertex": {
     "project": "aibrew-dev",
-    "location": "asia-northeast1",
+    "location": "us-central1",
     "summaryModel": "gemini-1.5-flash",
     "factCheckModel": "gemini-1.5-flash"
   },
