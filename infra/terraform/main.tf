@@ -18,6 +18,11 @@ provider "google" {
   region  = var.region
 }
 
+# Get project number for Cloud Run Jobs API
+data "google_project" "current" {
+  project_id = var.project_id
+}
+
 locals {
   env_suffix = "-${var.environment}"
 }
@@ -99,7 +104,7 @@ resource "google_cloud_scheduler_job" "digest_slots" {
   time_zone   = var.scheduler_timezone
 
   http_target {
-    uri = "https://cloudrun.googleapis.com/apis/run.googleapis.com/v1/namespaces/${var.project_id}/jobs/${google_cloud_run_v2_job.digest_jobs["crawler"].name}:run"
+    uri = "https://${var.region}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${data.google_project.current.number}/jobs/${google_cloud_run_v2_job.digest_jobs["crawler"].name}:run"
     http_method = "POST"
     oidc_token {
       service_account_email = "cloud-run-invoker@${var.project_id}.iam.gserviceaccount.com"
