@@ -96,3 +96,14 @@ jobs:
           tofu init -reconfigure
           tofu plan -var-file=terraform.tfvars.dev -out=tfplan
           tofu apply -auto-approve tfplan
+
+      # Cloud Run Jobs は :latest タグを使うため、イメージ更新を強制
+      - name: Force update Cloud Run Jobs with new image
+        run: |
+          for JOB in digest-crawler-dev digest-summarize-dev digest-publish-dev; do
+            echo "Updating $JOB with new image..."
+            gcloud run jobs update $JOB \
+              --region=$REGION \
+              --image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/aibrew/digest-jobs:$GITHUB_SHA \
+              --project=$PROJECT_ID
+          done
