@@ -3,7 +3,7 @@ name: Build and Deploy to Cloud Run
 on:
   push:
     branches:
-      - 001-ai-news-digest
+      - main
   workflow_dispatch:
 
 env:

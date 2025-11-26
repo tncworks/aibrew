@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["main", "001-ai-news-digest"]
+    branches: ["main"]
   pull_request:
 
 jobs:
@@ -25,6 +25,7 @@ jobs:
         run: make deps
 
       - name: Check prerequisites
+        if: github.ref_name != 'main' && github.ref_name != 'old-main'
         run: bash .specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
 
       - name: Lint
