@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+const dateSchema = z.preprocess((arg) => {
+  if (typeof arg === 'object' && arg !== null && 'toDate' in arg && typeof (arg as any).toDate === 'function') {
+    return (arg as any).toDate();
+  }
+  return arg;
+}, z.coerce.date());
+
 export const ArticleCandidateSchema = z.object({
   id: z.string().min(1),
   source_id: z.string(),
@@ -10,8 +17,8 @@ export const ArticleCandidateSchema = z.object({
   duplicate_group_id: z.string(),
   confidence: z.number().min(0).max(1),
   status: z.enum(['pending', 'approved', 'rejected']),
-  fetched_at: z.coerce.date(),
-  published_at: z.coerce.date(),
+  fetched_at: dateSchema,
+  published_at: dateSchema,
   reviewer_notes: z.string().max(500).nullable().optional(),
 });
 

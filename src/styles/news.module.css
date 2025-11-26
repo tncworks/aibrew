@@ -1,0 +1,187 @@
+/* Design Tokens */
+/* Design Tokens */
+.container {
+    --news-primary: #6366f1;
+    /* Indigo 500 */
+    --news-secondary: #a855f7;
+    /* Purple 500 */
+    --news-accent: #06b6d4;
+    /* Cyan 500 */
+    --news-bg: #0f172a;
+    /* Slate 900 */
+    --news-text: #f8fafc;
+    /* Slate 50 */
+    --news-text-muted: #94a3b8;
+    /* Slate 400 */
+    --news-font-sans: 'Inter', sans-serif;
+
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    font-family: var(--news-font-sans);
+    color: var(--news-text);
+    background-color: var(--news-bg);
+    min-height: 100vh;
+}
+
+/* Hero Section */
+.hero {
+    padding: 4rem 0 2rem;
+    text-align: center;
+}
+
+.heroTitle {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    background: linear-gradient(to right, var(--news-primary), var(--news-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+}
+
+.heroMeta {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    color: var(--news-text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.heroImage {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    margin-bottom: 2rem;
+}
+
+/* Body Section */
+.body {
+    font-size: 1.125rem;
+    line-height: 1.75;
+    color: #e2e8f0;
+    /* Slate 200 */
+}
+
+.body p {
+    margin-bottom: 1.5rem;
+}
+
+.body h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    color: var(--news-text);
+}
+
+.quote {
+    border-left: 4px solid var(--news-accent);
+    padding-left: 1rem;
+    font-style: italic;
+    color: var(--news-text-muted);
+    margin: 2rem 0;
+}
+
+.keyTakeaways {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.keyTakeaways h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--news-accent);
+}
+
+.keyTakeaways ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+}
+
+.keyTakeaways li {
+    margin-bottom: 0.5rem;
+}
+
+/* Progress Bar */
+.progressBarContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: transparent;
+    z-index: 50;
+}
+
+.progressBar {
+    height: 100%;
+    background: linear-gradient(to right, var(--news-accent), var(--news-primary));
+    width: 0%;
+    transition: width 0.1s ease;
+}
+
+/* CTA Section */
+.cta {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ctaTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.ctaButtons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.buttonPrimary {
+    background: var(--news-primary);
+    color: white;
+}
+
+.buttonPrimary:hover {
+    background: var(--news-secondary);
+}
+
+.buttonOutline {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--news-text);
+}
+
+.buttonOutline:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .heroTitle {
+        font-size: 1.8rem;
+    }
+
+    .body {
+        font-size: 1rem;
+    }
+}
