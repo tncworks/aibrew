@@ -1,107 +1,116 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { TagFilterPanel } from "@/components/filters/TagFilterPanel";
+import { useState } from "react";
+import { HeroSection } from "@/components/HeroSection";
+import { TagFilter } from "@/components/TagFilter";
+import { DigestCard } from "@/components/DigestCard";
+import { MOCK_DIGEST_ENTRIES } from "@/utils/mockData";
 
-type DigestEntry = {
-  id: string;
-  title: string;
-  summary: string;
-  tags: string[];
-  primary_source: { name: string; url: string };
-  visibility: "featured" | "read-more" | "hidden";
-};
-
-type DigestResponse = {
-  date: string;
-  entries: DigestEntry[];
-  readMore: DigestEntry[];
-  status: {
-    fallbackActive: boolean;
-    bannerMessage?: string;
-  };
-};
-
-const DEFAULT_TAGS = [
-  { id: "model-update", label: "モデル更新" },
-  { id: "new-tools", label: "新ツール" },
-  { id: "industry-insight", label: "業界動向" },
-  { id: "regulation", label: "規制動向" },
-  { id: "community", label: "コミュニティ" },
+const AVAILABLE_TAGS = [
+  { id: "モデル更新", label: "モデル更新" },
+  { id: "新ツール", label: "新ツール" },
+  { id: "業界動向", label: "業界動向" },
+  { id: "規制動向", label: "規制動向" },
+  { id: "コミュニティ", label: "コミュニティ" },
 ];
 
 export default function DigestPage({ params }: { params: { date: string } }) {
-  const [data, setData] = useState<DigestResponse | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const tagsQuery = selectedTags.length
-        ? `&tags=${selectedTags.join(",")}`
-        : "";
-      const searchQuery = search ? `&search=${encodeURIComponent(search)}` : "";
-      const res = await fetch(
-        `/api/v1/digests?date=${params.date}${tagsQuery}${searchQuery}`,
-        { cache: "no-store" },
-      );
-      const json = (await res.json()) as DigestResponse;
-      setData(json);
-    };
-    fetchData();
-  }, [params.date, selectedTags, search]);
+  // Filter entries based on selected tags
+  const filteredEntries = MOCK_DIGEST_ENTRIES.filter((entry) => {
+    if (selectedTags.length === 0) return true;
+    return entry.tags.some((tag) => selectedTags.includes(tag));
+  });
 
-  if (!data) {
-    return <p>読み込み中...</p>;
-  }
+  const featuredEntries = filteredEntries.filter(e => e.visibility === 'featured');
+  const readMoreEntries = filteredEntries.filter(e => e.visibility === 'read-more');
 
   return (
-    <main>
-      <h1>{data.date} の生成AIダイジェスト</h1>
-      {data.status.fallbackActive && (
-        <div className="banner">{data.status.bannerMessage}</div>
-      )}
-      <TagFilterPanel
-        availableTags={DEFAULT_TAGS}
+    <main className="container">
+      <HeroSection date={params.date} />
+
+      <TagFilter
+        availableTags={AVAILABLE_TAGS}
         selected={selectedTags}
-        search={search}
-        onChange={({ tags, search }) => {
-          setSelectedTags(tags);
-          setSearch(search);
-        }}
+        onChange={setSelectedTags}
       />
-      <section>
-        {data.entries.map((entry) => (
-          <article key={entry.id}>
-            <h2>{entry.title}</h2>
-            <p>{entry.summary}</p>
-            <p>
-              <a href={entry.primary_source.url} target="_blank" rel="noreferrer">
-                {entry.primary_source.name} を読む
-              </a>
-            </p>
-            <div className="tag-badges">
-              {entry.tags.map((tag) => (
-                <span key={tag}>{tag}</span>
-              ))}
-            </div>
-          </article>
+
+      <section className="entries-grid">
+        {featuredEntries.map((entry) => (
+          <DigestCard key={entry.id} entry={entry} />
         ))}
       </section>
-      {data.readMore.length > 0 && (
-        <section>
-          <h3>さらに読む</h3>
-          <ul>
-            {data.readMore.map((entry) => (
-              <li key={entry.id}>
-                <a href={entry.primary_source.url} target="_blank" rel="noreferrer">
-                  {entry.title}
-                </a>
-              </li>
+
+      {readMoreEntries.length > 0 && (
+        <section className="read-more-section">
+          <h3 className="section-title">さらに読む</h3>
+          <div className="entries-grid">
+            {readMoreEntries.map((entry) => (
+              <DigestCard key={entry.id} entry={entry} />
             ))}
-          </ul>
+          </div>
         </section>
       )}
+
+      {filteredEntries.length === 0 && (
+        <div className="empty-state">
+          <p>該当する記事が見つかりませんでした。</p>
+          <button
+            onClick={() => setSelectedTags([])}
+            className="reset-button"
+          >
+            フィルターを解除
+          </button>
+        </div>
+      )}
+
+      <style jsx>{`
+        .entries-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: var(--spacing-lg);
+          margin-bottom: var(--spacing-2xl);
+        }
+
+        .read-more-section {
+          margin-top: var(--spacing-2xl);
+          padding-top: var(--spacing-xl);
+          border-top: 1px solid var(--color-border);
+        }
+
+        .section-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          margin-bottom: var(--spacing-lg);
+          color: var(--color-text-main);
+        }
+
+        .empty-state {
+          text-align: center;
+          padding: var(--spacing-2xl);
+          color: var(--color-text-muted);
+        }
+
+        .reset-button {
+          margin-top: var(--spacing-md);
+          background: none;
+          border: none;
+          color: var(--color-primary);
+          cursor: pointer;
+          font-weight: 600;
+        }
+
+        .reset-button:hover {
+          text-decoration: underline;
+        }
+
+        @media (min-width: 768px) {
+          .entries-grid {
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+          }
+        }
+      `}</style>
     </main>
   );
 }
