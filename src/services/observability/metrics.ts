@@ -2,6 +2,7 @@ import { MetricServiceClient } from '@google-cloud/monitoring';
 import { loadConfig } from '../config/index';
 
 const cfg = loadConfig();
+const isLocalDev = !!cfg.firestore.emulatorHost || process.env.NODE_ENV === 'development';
 const monitoringClient = new MetricServiceClient();
 
 export interface MetricPoint {
@@ -12,6 +13,15 @@ export interface MetricPoint {
 }
 
 export async function writeMetric(point: MetricPoint) {
+  // ローカル開発時はコンソールに出力
+  if (isLocalDev) {
+    const timestamp = new Date().toISOString();
+    const labelsStr = point.labels ? ` labels=${JSON.stringify(point.labels)}` : '';
+    const unitStr = point.unit ? ` unit=${point.unit}` : '';
+    console.log(`[${timestamp}] [METRIC] ${point.name}=${point.value}${labelsStr}${unitStr}`);
+    return;
+  }
+
   const projectPath = monitoringClient.projectPath(cfg.firestore.projectId);
   const series = {
     metric: {
