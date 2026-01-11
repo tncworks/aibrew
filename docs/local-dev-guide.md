@@ -47,32 +47,50 @@ gcloud beta emulators firestore start --host-port=localhost:8080
 
 ## データ取得の確認
 
-### 方法1: fetch_sourcesジョブを直接実行
+### 方法1: fetch_sourcesジョブを直接実行（DRY-RUNモード推奨）
+
+Firestore Emulatorなしで動作確認する場合、DRY-RUNモードを使用します：
 
 ```bash
+pnpm tsx src/cli/cron/jobs/fetch_sources.ts --dry-run
+```
+
+DRY-RUNモードでは実際のデータ保存は行わず、どのようなデータが取得・保存されるかをコンソールに表示します。
+
+Firestore Emulatorを起動している場合は、実際にデータを保存できます：
+
+```bash
+# 別ターミナルでFirestore Emulatorを起動
+make emu-firestore
+
+# .envファイルでFIRESTORE_EMULATOR_HOST=localhost:8080を設定
+
+# 実際にデータを保存
 pnpm tsx src/cli/cron/jobs/fetch_sources.ts
 ```
 
-成功すると、以下のような出力が表示されます：
+DRY-RUNモード成功時の出力例：
 
 ```
-[2025-01-11T08:00:00.000Z] [INFO] fetch_sources_start {"slot":"0530"}
+[2026-01-11T08:00:00.000Z] [INFO] fetch_sources_start {"slot":"0530","dryRun":true}
 
 ========== データ取得開始 (slot: 0530) ==========
+⚠️  DRY-RUN モード: 実際のデータ保存は行いません
+
 
 フィード処理中: Qiita (qiita)
-  ✓ source_feedsコレクションに保存: qiita
+  [DRY-RUN] source_feedsコレクションに保存する予定: qiita
   記事数: 1件
-  ✓ article_candidatesに保存:
+  [DRY-RUN] article_candidatesに保存する予定:
     - ID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
     - タイトル: Qiita で話題の生成AIアップデート
     - URL: https://qiita.com/tags/generative-ai/feed?id=...
     - タグ: model-update
 
 フィード処理中: Zenn (zenn)
-  ✓ source_feedsコレクションに保存: zenn
+  [DRY-RUN] source_feedsコレクションに保存する予定: zenn
   記事数: 1件
-  ✓ article_candidatesに保存:
+  [DRY-RUN] article_candidatesに保存する予定:
     - ID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
     - タイトル: Zenn で話題の生成AIアップデート
     - URL: https://zenn.dev/topics/generative-ai/feed?id=...
@@ -81,14 +99,15 @@ pnpm tsx src/cli/cron/jobs/fetch_sources.ts
 ========== データ取得完了 ==========
 処理フィード数: 2件
 
-[2025-01-11T08:00:00.000Z] [INFO] fetch_sources_complete {"slot":"0530","feeds":2}
-[2025-01-11T08:00:00.000Z] [METRIC] fetch_sources.count=2 labels={"slot":"0530"}
+[2026-01-11T08:00:00.000Z] [INFO] fetch_sources_complete {"slot":"0530","feeds":2,"dryRun":true}
+[2026-01-11T08:00:00.000Z] [METRIC] fetch_sources.count=2 labels={"slot":"0530","dryRun":"true"}
+✓ 処理が正常に完了しました
 ```
 
-### 方法2: 完全なダイジェストパイプラインを実行
+### 方法2: 完全なダイジェストパイプラインを実行（DRY-RUNモード）
 
 ```bash
-pnpm tsx src/cli/cron/digest_pipeline.ts --slot=0530
+pnpm tsx src/cli/cron/digest_pipeline.ts --slot=0530 --dry-run
 ```
 
 これは以下の3つのステージを順次実行します：
@@ -96,19 +115,25 @@ pnpm tsx src/cli/cron/digest_pipeline.ts --slot=0530
 2. summarize_articles (要約生成)
 3. publish_digest (ダイジェスト公開)
 
-### 方法3: Makefileコマンドを使用
+### 方法3: Makefileコマンドを使用（DRY-RUNモード）
 
 ```bash
-make job-crawl
+# DRY-RUNモードで実行
+pnpm tsx src/cli/cron/jobs/fetch_sources.ts --dry-run
 ```
+
+**注意**: 現在のMakefileの`job-crawl`コマンドは実際のFirestoreエミュレータ接続を試みます。DRY-RUNモードで実行するには、上記のコマンドを直接使用してください。
 
 ## データの確認
 
-データが正しく保存されたか確認するスクリプトを実行：
+データが正しく保存されたか確認するスクリプトを実行（Firestore Emulator使用時のみ）：
 
 ```bash
+# Firestore Emulatorが起動していて、FIRESTORE_EMULATOR_HOSTが設定されている必要があります
 pnpm tsx src/scripts/verify_data.ts
 ```
+
+**注意**: DRY-RUNモードではデータは保存されないため、このスクリプトは空の結果を返します。
 
 出力例：
 
@@ -142,11 +167,28 @@ Firestoreプロジェクト: aibrew-dev
 
 ## トラブルシューティング
 
+### データが取得できているか確認したい
+
+**DRY-RUNモードを使用してください（推奨）**:
+
+```bash
+pnpm tsx src/cli/cron/jobs/fetch_sources.ts --dry-run
+```
+
+DRY-RUNモードでは、Firestore Emulatorなしでもデータ取得のフローを確認でき、どのようなデータが保存されるかをコンソールで確認できます。
+
 ### エラー: "Could not load the default credentials"
 
-**原因**: Firestore Emulatorが起動していない、または環境変数が設定されていない
+**原因**: Firestore EmulatorまたはGoogle Cloud認証が設定されていない状態で、実際のFirestore接続を試みている
 
 **解決方法**:
+
+**オプション1: DRY-RUNモードを使用（推奨）**
+```bash
+pnpm tsx src/cli/cron/jobs/fetch_sources.ts --dry-run
+```
+
+**オプション2: Firestore Emulatorを使用**
 1. Firestore Emulatorが起動していることを確認
 2. `.env`ファイルに `FIRESTORE_EMULATOR_HOST=localhost:8080` が設定されていることを確認
 3. エミュレータのポート（8080）が他のプロセスで使用されていないか確認

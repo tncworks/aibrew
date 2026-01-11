@@ -9,7 +9,7 @@ import { runPublish } from './jobs/publish_digest.js';
 
 type Stage = {
   name: string;
-  run: (slot: string) => Promise<void>;
+  run: (slot: string, dryRun?: boolean) => Promise<void>;
 };
 
 const stages: Stage[] = [
@@ -28,18 +28,24 @@ function parseSlot(): string {
 
 async function main() {
   const slot = parseSlot();
+  const dryRun = process.argv.includes('--dry-run') || !process.env.FIRESTORE_EMULATOR_HOST;
   const cfg = loadConfig();
 
   if (!cfg.scheduler.slots.includes(slot)) {
     throw new Error(`無効なスロット指定です: ${slot}`);
   }
 
-  info('digest_pipeline_start', { slot });
+  if (dryRun && !process.argv.includes('--dry-run')) {
+    console.log('⚠️  FIRESTORE_EMULATOR_HOSTが設定されていないため、DRY-RUNモードで実行します');
+    console.log('   実際にデータを保存するには、Firestoreエミュレータを起動して環境変数を設定してください\n');
+  }
+
+  info('digest_pipeline_start', { slot, dryRun });
 
   for (const stage of stages) {
     try {
       info(`stage_start_${stage.name}`, { slot });
-      await stage.run(slot);
+      await stage.run(slot, dryRun);
       info(`stage_complete_${stage.name}`, { slot });
     } catch (err) {
       logError(`stage_failed_${stage.name}`, {
@@ -50,7 +56,7 @@ async function main() {
     }
   }
 
-  info('digest_pipeline_complete', { slot });
+  info('digest_pipeline_complete', { slot, dryRun });
 }
 
 main().catch((err) => {
