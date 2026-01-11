@@ -12,7 +12,12 @@ function todayDate() {
   return new Date().toISOString().slice(0, 10);
 }
 
-async function recordDigestRun(slot: string, status: string) {
+async function recordDigestRun(slot: string, status: string, dryRun: boolean = false) {
+  if (dryRun) {
+    console.log(`\n[DRY-RUN] digest_runsコレクションに記録する予定: ${todayDate()}-${slot} (status: ${status})`);
+    return;
+  }
+  
   const db = getDb();
   const digestDate = todayDate();
   const runId = `${digestDate}-${slot}`;
@@ -30,10 +35,18 @@ async function recordDigestRun(slot: string, status: string) {
   );
 }
 
-export async function runPublish(slot: string) {
-  const db = getDb();
+export async function runPublish(slot: string, dryRun: boolean = false) {
   const digestDate = todayDate();
-  info('publish_start', { slot, digestDate });
+  info('publish_start', { slot, digestDate, dryRun });
+
+  if (dryRun) {
+    console.log('\n⚠️  DRY-RUN モード: ダイジェスト公開処理はスキップします');
+    console.log('   実際には承認済み記事をdigest_entriesコレクションへ公開します\n');
+    await recordDigestRun(slot, 'success', dryRun);
+    return;
+  }
+
+  const db = getDb();
 
   const snapshot = await db
     .collection('article_candidates')
@@ -71,7 +84,7 @@ export async function runPublish(slot: string) {
     });
   }
 
-  await recordDigestRun(slot, 'success');
+  await recordDigestRun(slot, 'success', dryRun);
   info('publish_complete', {
     slot,
     digestDate,

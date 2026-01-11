@@ -22,9 +22,16 @@ function deriveTags(title: string): string[] {
   return tags.slice(0, 3);
 }
 
-export async function runSummarize(slot: string) {
+export async function runSummarize(slot: string, dryRun: boolean = false) {
+  info('summarize_start', { slot, dryRun });
+  
+  if (dryRun) {
+    console.log('\n⚠️  DRY-RUN モード: 要約処理はスキップします');
+    console.log('   実際にはVertex AIを使用して記事の要約を生成します\n');
+    return;
+  }
+  
   const db = getDb();
-  info('summarize_start', { slot });
   const snapshot = await db
     .collection('article_candidates')
     .where('status', '==', 'pending')

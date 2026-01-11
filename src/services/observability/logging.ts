@@ -13,6 +13,7 @@ type LogSeverity =
   | 'EMERGENCY';
 
 const cfg = loadConfig();
+const isLocalDev = !!cfg.firestore.emulatorHost || process.env.NODE_ENV === 'development';
 const logging = new Logging({ projectId: cfg.firestore.projectId });
 const log = logging.log(cfg.observability.logName);
 
@@ -23,6 +24,15 @@ export interface LogPayload {
 }
 
 export async function writeLog(payload: LogPayload) {
+  // ローカル開発時はコンソールに出力
+  if (isLocalDev) {
+    const timestamp = new Date().toISOString();
+    const severity = payload.severity ?? 'INFO';
+    const dataStr = payload.data ? ` ${JSON.stringify(payload.data)}` : '';
+    console.log(`[${timestamp}] [${severity}] ${payload.message}${dataStr}`);
+    return;
+  }
+
   const entry = log.entry(
     {
       severity: payload.severity ?? 'INFO',
